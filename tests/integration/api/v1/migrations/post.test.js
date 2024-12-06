@@ -23,13 +23,16 @@ test("POST to /api/v1/migrations should return 200", async () => {
 });
 
 test("PATCH to /api/v1/migrations should return 405 and error message", async () => {
-  const response = await fetch("http://localhost:3000/api/v1/migrations", {
-    method: "PATCH",
-  });
-  expect(response.status).toBe(405);
+  const methods = ["PATCH", "DELETE", "PUT"];
 
-  const responseBody = await response.json();
-  expect(responseBody.message).toBe(
-    "This endpoint does not accept this method",
-  );
+  for (let i = 0; i < methods.length; i++) {
+    const response = await fetch("http://localhost:3000/api/v1/migrations", {
+      method: methods[i],
+    });
+
+    const responseBody = await response.json();
+
+    expect(response.status).toBe(405);
+    expect(responseBody.error).toBe(`Method "${methods[i]}" not allowed`);
+  }
 });
